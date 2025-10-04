@@ -93,8 +93,8 @@ async function init(){
   const loadingScreen = document.getElementById("loadingScreen");
   const formWrapper = document.getElementById("formWrapper");
   
+  // Carica dati in background
   try {
-    // UNA SOLA chiamata che prende TUTTO (date disponibili)
     const response = await fetch(API_URL + '?action=getAllData');
     const data = await response.json();
     
@@ -102,7 +102,6 @@ async function init(){
       throw new Error(data.error);
     }
     
-    // Salva i dati in memoria
     date1ora = data.date && data.date["1h"] ? data.date["1h"] : [];
     date3ore = data.date && data.date["3h"] ? data.date["3h"] : [];
     
@@ -114,11 +113,11 @@ async function init(){
     return;
   }
 
-  // Aspetta minimo 2 secondo per mostrare il loading
+  // Mostra form SEMPRE dopo 2000ms (2 secondi)
   setTimeout(() => {
     loadingScreen.style.display = "none";
     formWrapper.style.display = "block";
-  }, 1000);
+  }, 2000);
 
   aggiornaStatoPrenota();
 }
@@ -166,34 +165,29 @@ async function invia(){
   console.log('Invio dati a:', API_URL);
   console.log('Dati:', dati);
 
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'salvaPrenotazione', dati: dati })
-    });
-
+  // Avvia chiamata in background (Apps Script lavora da solo)
+  fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'salvaPrenotazione', dati: dati })
+  })
+  .then(response => {
     console.log('Response status:', response.status);
-    const result = await response.json();
+    return response.json();
+  })
+  .then(result => {
     console.log('Risultato:', result);
+  })
+  .catch(error => {
+    console.error('Errore (non bloccante):', error);
+  });
 
-    if(result.success) {
-      setTimeout(() => {
-        document.getElementById("formWrapper").style.display="none";
-        const overlay = document.getElementById("successOverlay");
-        overlay.style.display="block";
-        overlay.scrollIntoView({behavior:"smooth", block:"center"});
-      }, 1000);
-    } else {
-      alert('Errore nel salvataggio: ' + (result.error || 'Errore sconosciuto'));
-      btn.disabled = false;
-      btn.textContent = "Prenota";
-    }
-  } catch(error) {
-    console.error('Errore completo:', error);
-    alert('Errore nella comunicazione con il server: ' + error.message);
-    btn.disabled = false;
-    btn.textContent = "Prenota";
-  }
+  // Mostra conferma SEMPRE dopo 2500ms (2.5 secondi)
+  setTimeout(() => {
+    document.getElementById("formWrapper").style.display="none";
+    const overlay = document.getElementById("successOverlay");
+    overlay.style.display="block";
+    overlay.scrollIntoView({behavior:"smooth", block:"center"});
+  }, 2500);
 }
 </script>
 </body>
