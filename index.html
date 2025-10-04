@@ -93,7 +93,13 @@ async function init(){
   const loadingScreen = document.getElementById("loadingScreen");
   const formWrapper = document.getElementById("formWrapper");
   
-  // Carica dati in background
+  // Imposta subito il timeout di 2 secondi
+  setTimeout(() => {
+    loadingScreen.style.display = "none";
+    formWrapper.style.display = "block";
+  }, 2000);
+  
+  // Nel frattempo carica dati in background
   try {
     const response = await fetch(API_URL + '?action=getAllData');
     const data = await response.json();
@@ -112,12 +118,6 @@ async function init(){
     alert('Errore nel caricamento dei dati. Riprova più tardi.');
     return;
   }
-
-  // Mostra form SEMPRE dopo 2000ms (2 secondi)
-  setTimeout(() => {
-    loadingScreen.style.display = "none";
-    formWrapper.style.display = "block";
-  }, 2);
 
   aggiornaStatoPrenota();
 }
