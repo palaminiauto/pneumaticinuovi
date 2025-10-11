@@ -49,6 +49,11 @@
     <h4>PALAMINI AUTO, Via San Luigi 1/A, Cesano Maderno</h4>
     <h4>Si ricorda di rispettare l'orario scelto, grazie.</h4>
 
+    <div style="background:#ffe6e6; border:2px solid red; border-radius:8px; padding:12px; margin-top:15px; color:red; font-weight:bold; font-size:15px; text-align:center;">
+      IMPORTANTE: Utilizzare questo form per prenotare ESCLUSIVAMENTE se si è ricevuto il link via WHATSAPP, è valido solamente per la fornitura di PNEUMATICI NUOVI.
+      Per tutti gli altri appuntamenti utilizzare i link pubblici disponibili sul sito www.palaminiauto.it.
+    </div>
+
     <form id="prenotaForm" oninput="aggiornaStatoPrenota(); return false;">
       <label>EMAIL:</label>
       <input type="email" id="email" inputmode="email" autocomplete="email" onchange="aggiornaStatoPrenota()">
@@ -70,6 +75,10 @@
         <label><input type="radio" name="tipoAppuntamento" value="1 ORA DI FERMO AUTO" onchange="aggiornaDateDisponibili()">1 ORA DI FERMO AUTO</label>
         <label><input type="radio" name="tipoAppuntamento" value="3 ORE DI FERMO AUTO" onchange="aggiornaDateDisponibili()">3 ORE DI FERMO AUTO</label>
       </div>
+
+      <div style="background:#ffe6e6; border:2px solid red; border-radius:8px; padding:12px; margin-top:15px; color:red; font-weight:bold; font-size:15px; text-align:center;">
+      ⏰ Si raccomanda di rispettare l'orario prescelto. Con un ritardo superiore ai 5 minuti l'appuntamento verrà considerato annullato.
+    </div>
 
       <label>DATA APPUNTAMENTO:</label>
       <select id="dataAppuntamento" onchange="aggiornaStatoPrenota()">
