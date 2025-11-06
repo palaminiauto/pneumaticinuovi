@@ -204,7 +204,7 @@ async function invia(){
   btn.textContent = "Invio in corso, attendere...";
 
   const dati = {
-    targa: "GOMME NUOVE " + document.getElementById("targa").value.trim(),
+    targa: document.getElementById("targa").value.trim() + " GOMME NUOVE",
     marcaModello: document.getElementById("marcaModello").value.trim(),
     nomeCognome: document.getElementById("nomeCognome").value.trim(),
     email: document.getElementById("email").value.trim(),
