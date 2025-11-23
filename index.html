@@ -286,20 +286,27 @@ function unisciEOrdinaDate(date1ora, date3ore) {
     "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5,
     "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11
   };
-
+  
   function parseDateString(str) {
     if (!str) return null;
     const parts = str.toLowerCase().split(" ");
     const day = parseInt(parts[1]);
     const month = months[parts[2]];
-    const now = new Date();
-    const year = now.getFullYear();
     const [hours, minutes] = parts[3].split(":").map(Number);
+    
+    const now = new Date();
+    let year = now.getFullYear();
+    
+    // Se il mese è prima del mese corrente, significa anno prossimo
+    if (month < now.getMonth() || (month === now.getMonth() && day < now.getDate())) {
+      year++;
+    }
+    
     return new Date(year, month, day, hours, minutes);
   }
-
+  
   const allDatesWithText = [];
-
+  
   date1ora.forEach(d => {
     const dateObj = parseDateString(d);
     if (dateObj) {
@@ -309,7 +316,7 @@ function unisciEOrdinaDate(date1ora, date3ore) {
       });
     }
   });
-
+  
   date3ore.forEach(d => {
     const dateObj = parseDateString(d);
     if (dateObj) {
@@ -319,9 +326,8 @@ function unisciEOrdinaDate(date1ora, date3ore) {
       });
     }
   });
-
+  
   allDatesWithText.sort((a, b) => a.date - b.date);
-
   return allDatesWithText.map(item => item.text);
 }
 
