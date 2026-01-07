@@ -29,6 +29,48 @@
     margin: 20px auto;
   }
   
+  #pinWrapper {
+    width: 100%; 
+    max-width: 480px; 
+    padding: 30px 20px; 
+    background: #fff; 
+    border-radius: 12px; 
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1); 
+    margin: 20px auto;
+    display: none;
+    text-align: center;
+  }
+  
+  #pinWrapper h2 {
+    font-size: 22px;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  
+  #pinInput {
+    width: 200px;
+    font-size: 32px;
+    padding: 15px;
+    text-align: center;
+    letter-spacing: 15px;
+    border: 2px solid #1a73e8;
+    border-radius: 8px;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  #pinError {
+    display: none;
+    color: red;
+    font-weight: bold;
+    margin-top: 20px;
+    font-size: 15px;
+    background: #ffe6e6;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid red;
+  }
+  
   h2 {
     text-align: center; 
     font-size: 22px; 
@@ -183,6 +225,15 @@
     <p>Caricamento modulo in corso...</p>
   </div>
 
+  <!-- Schermata verifica PIN -->
+  <div id="pinWrapper">
+    <h2>Inserisci il PIN ricevuto su WhatsApp</h2>
+    <input type="text" id="pinInput" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+    <div id="pinError">
+      ⚠️ Verificare di aver inserito il PIN ricevuto assieme al link nel messaggio whatsapp
+    </div>
+  </div>
+
   <!-- Schermata invio dati -->
   <div id="sendingOverlay">
     <div class="spinner"></div>
@@ -242,13 +293,18 @@
   </div>
 
 <script>
+// ========================================
+// CONFIGURAZIONE PIN - MODIFICARE QUI
+// ========================================
+const PIN_CORRETTO = "1824";
+
 const API_URL = 'https://script.google.com/macros/s/AKfycbwo7KNaTHkDrpbvK6u_uzYXlZgh-4VoizoTnGCijEcxFB4g_3T5zu29UWi7QSE2SICJqQ/exec';
 
 let dateDisponibili = [];
 
 async function init(){
   const loadingScreen = document.getElementById("loadingOverlay");
-  const formWrapper = document.getElementById("formWrapper");
+  const pinWrapper = document.getElementById("pinWrapper");
   
   console.log('🔄 Caricamento dati in corso...');
   
@@ -269,16 +325,53 @@ async function init(){
     
     popolaDateDropdown();
     
+    // Nascondi loading e mostra schermata PIN
     loadingScreen.style.display = "none";
-    formWrapper.style.display = "block";
+    pinWrapper.style.display = "block";
+    
+    // Imposta listener per verifica PIN
+    const pinInput = document.getElementById("pinInput");
+    pinInput.focus();
+    pinInput.addEventListener("input", verificaPin);
     
   } catch(error) {
     console.error('❌ Errore caricamento:', error);
     alert('Errore nel caricamento dei dati. Riprova più tardi.');
     loadingScreen.querySelector('p').textContent = 'Errore di caricamento. Ricarica la pagina.';
   }
+}
 
-  aggiornaStatoPrenota();
+function verificaPin() {
+  const pinInput = document.getElementById("pinInput");
+  const pinError = document.getElementById("pinError");
+  const pinWrapper = document.getElementById("pinWrapper");
+  const formWrapper = document.getElementById("formWrapper");
+  
+  // Accetta solo numeri
+  pinInput.value = pinInput.value.replace(/[^0-9]/g, '');
+  
+  // Quando raggiunge 4 cifre, verifica
+  if (pinInput.value.length === 4) {
+    if (pinInput.value === PIN_CORRETTO) {
+      console.log('✅ PIN corretto');
+      pinError.style.display = "none";
+      pinWrapper.style.display = "none";
+      formWrapper.style.display = "block";
+      aggiornaStatoPrenota();
+    } else {
+      console.log('❌ PIN errato');
+      pinError.style.display = "block";
+      pinInput.value = "";
+      pinInput.style.borderColor = "red";
+      
+      // Resetta il colore del bordo dopo 1 secondo
+      setTimeout(() => {
+        pinInput.style.borderColor = "#1a73e8";
+      }, 1000);
+    }
+  } else {
+    pinError.style.display = "none";
+  }
 }
 
 function unisciEOrdinaDate(date1ora, date3ore) {
@@ -397,18 +490,18 @@ async function invia(){
       overlay.scrollIntoView({behavior:"smooth", block:"center"});
     } else {
       console.error('❌ Errore server:', result.error);
+      document.getElementById("formWrapper").style.display = "none";
       const errorOverlay = document.getElementById("errorOverlay");
       errorOverlay.style.display = "block";
       errorOverlay.scrollIntoView({behavior:"smooth", block:"center"});
-      btn.disabled = false;
     }
   } catch(error) {
     console.error('❌ Errore fetch:', error);
     document.getElementById("sendingOverlay").style.display = "none";
+    document.getElementById("formWrapper").style.display = "none";
     const errorOverlay = document.getElementById("errorOverlay");
     errorOverlay.style.display = "block";
     errorOverlay.scrollIntoView({behavior:"smooth", block:"center"});
-    btn.disabled = false;
   }
 }
 </script>
