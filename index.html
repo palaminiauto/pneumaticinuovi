@@ -138,7 +138,7 @@
     text-align: center;
   }
   
-  #successOverlay, #errorOverlay {
+  #successOverlay {
     display: none; 
     position: fixed; 
     top: 50%; 
@@ -154,16 +154,8 @@
     border-radius: 12px; 
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     line-height: 1.6;
-  }
-
-  #successOverlay {
     color: #2e7d32;
     border: 3px solid #4caf50;
-  }
-
-  #errorOverlay {
-    color: #c62828;
-    border: 3px solid #f44336;
   }
   
   #loadingOverlay, #sendingOverlay {
@@ -207,7 +199,6 @@
     padding: 0 20px;
   }
   
-  /* Ottimizzazioni mobile */
   @media (max-width: 600px) {
     h2 { font-size: 20px; }
     h4 { font-size: 15px; }
@@ -217,21 +208,75 @@
     #alertObbligatorio { font-size: 17px; }
   }
 
- #dateUnavailableOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; justify-content: center; align-items: center; padding: 20px; }
-.modal-content { background: #fff; padding: 30px; border-radius: 12px; text-align: center; max-width: 400px; width: 100%; border: 3px solid #f44336; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-.modal-content h3 { color: #d32f2f; margin-top: 0; }
-.modal-content p { font-size: 16px; line-height: 1.5; margin-bottom: 20px; }
- 
+  #dateUnavailableOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 300;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    border: 3px solid #f44336;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .modal-content h3 { color: #d32f2f; margin-top: 0; }
+  .modal-content p { font-size: 16px; line-height: 1.5; margin-bottom: 20px; }
+
+  /* ── OVERLAY ERRORE GAS (stesso stile del dateUnavailableOverlay) ── */
+  #gasErrorOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 300;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  #gasErrorOverlay .modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    border: 3px solid #f44336;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  #gasErrorOverlay h3 { color: #d32f2f; margin-top: 0; margin-bottom: 12px; }
+  #gasErrorOverlay p  { font-size: 16px; line-height: 1.5; margin-bottom: 20px; color: #333; }
+  #gasErrorOverlay button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: bold;
+    width: auto;
+  }
+  #gasErrorOverlay button:hover { background: #1557b0; transform: none; box-shadow: none; }
 </style>
 </head>
 <body onload="init()">
-  <!-- Schermata di caricamento iniziale -->
+
   <div id="loadingOverlay">
     <div class="spinner"></div>
     <p>Caricamento modulo in corso...</p>
   </div>
 
-  <!-- Schermata verifica PIN -->
   <div id="pinWrapper">
     <h2>Inserisci il PIN ricevuto su WhatsApp</h2>
     <input type="text" id="pinInput" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
@@ -240,18 +285,27 @@
     </div>
   </div>
 
-  <!-- Schermata invio dati -->
   <div id="sendingOverlay">
     <div class="spinner"></div>
     <p id="sendingText">Invio dati in corso...<br>NON CHIUDERE LA PAGINA<br>Attendere...</p>
-</div>
-<div id="dateUnavailableOverlay">
-  <div class="modal-content">
-    <h3>⚠️ DATA NON PIÙ DISPONIBILE</h3>
-    <p>La data che avevi scelto è appena stata prenotata da un altro utente.<br><br>La lista è stata aggiornata, seleziona una nuova data per favore.</p>
-    <button type="button" onclick="chiudiAvvisoData()" style="background-color: #f44336;">AVANTI</button>
   </div>
-</div>
+
+  <div id="dateUnavailableOverlay">
+    <div class="modal-content">
+      <h3>⚠️ DATA NON PIÙ DISPONIBILE</h3>
+      <p>La data che avevi scelto è appena stata prenotata da un altro utente.<br><br>La lista è stata aggiornata, seleziona una nuova data per favore.</p>
+      <button type="button" onclick="chiudiAvvisoData()" style="background-color: #f44336;">AVANTI</button>
+    </div>
+  </div>
+
+  <!-- ── OVERLAY ERRORE GAS ── -->
+  <div id="gasErrorOverlay">
+    <div class="modal-content">
+      <h3>❌ ERRORE NELL'INVIO</h3>
+      <p id="gasErrorMsg">Si è verificato un problema durante l'invio della prenotazione.<br><br>Controlla la tua connessione e riprova.</p>
+      <button type="button" onclick="document.getElementById('gasErrorOverlay').style.display='none'">&#8592; Torna indietro</button>
+    </div>
+  </div>
 
   <div id="formWrapper" style="display:none;">
     <h2>PRENOTAZIONE CAMBIO GOMME NUOVE</h2>
@@ -282,7 +336,7 @@
 
       <label>DATA APPUNTAMENTO:</label>
       <select id="dataAppuntamento" onchange="aggiornaRiconsegna(); aggiornaStatoPrenota()">
-      <option value="">Seleziona...</option>
+        <option value="">Seleziona...</option>
       </select>
       <div id="infoRiconsegna" style="display:none; background:#fff3cd; border:2px solid #ffa500; padding:15px; margin:15px 0; border-radius:8px; font-weight:bold; color:#d45500; text-align:center; font-size:16px;"></div>
 
@@ -301,18 +355,8 @@
     Grazie.
   </div>
 
-  <div id="errorOverlay">
-    ❌ ERRORE NELL'INVIO DEI DATI<br><br>
-    Si è verificato un problema durante l'invio della prenotazione.<br><br>
-    Ti preghiamo di riprovare.
-  </div>
-
 <script>
-// ========================================
-// CONFIGURAZIONE PIN - MODIFICARE QUI
-// ========================================
 const PIN_CORRETTO = "7842";
-
 const API_URL = 'https://script.google.com/macros/s/AKfycbzjxKHVPHjn18LDf-DWvC5GgD4p3oGoJvPgBweUyJHswy1OfZGhO45IlWQz7bHQgXxx/exec';
 
 let dateDisponibili = [];
@@ -321,36 +365,25 @@ async function init(){
   const loadingScreen = document.getElementById("loadingOverlay");
   const pinWrapper = document.getElementById("pinWrapper");
   
-  console.log('🔄 Caricamento dati in corso...');
-  
   try {
     const response = await fetch(API_URL + '?service=pnm');
     const data = await response.json();
          
-    if (data.error) {
-      throw new Error(data.error);
-    }
+    if (data.error) throw new Error(data.error);
     
     const date1ora = data.date && data.date["1h"] ? data.date["1h"] : [];
     const date3ore = data.date && data.date["3h"] ? data.date["3h"] : [];
-    
     dateDisponibili = unisciEOrdinaDate(date1ora, date3ore);
-    
-    console.log('📅 Date disponibili:', dateDisponibili.length);
-    
     popolaDateDropdown();
     
-    // Nascondi loading e mostra schermata PIN
     loadingScreen.style.display = "none";
     pinWrapper.style.display = "block";
     
-    // Imposta listener per verifica PIN
     const pinInput = document.getElementById("pinInput");
     pinInput.focus();
     pinInput.addEventListener("input", verificaPin);
     
   } catch(error) {
-    console.error('❌ Errore caricamento:', error);
     alert('Errore nel caricamento dei dati. Riprova più tardi.');
     loadingScreen.querySelector('p').textContent = 'Errore di caricamento. Ricarica la pagina.';
   }
@@ -362,27 +395,19 @@ function verificaPin() {
   const pinWrapper = document.getElementById("pinWrapper");
   const formWrapper = document.getElementById("formWrapper");
   
-  // Accetta solo numeri
   pinInput.value = pinInput.value.replace(/[^0-9]/g, '');
   
-  // Quando raggiunge 4 cifre, verifica
   if (pinInput.value.length === 4) {
     if (pinInput.value === PIN_CORRETTO) {
-      console.log('✅ PIN corretto');
       pinError.style.display = "none";
       pinWrapper.style.display = "none";
       formWrapper.style.display = "block";
       aggiornaStatoPrenota();
     } else {
-      console.log('❌ PIN errato');
       pinError.style.display = "block";
       pinInput.value = "";
       pinInput.style.borderColor = "red";
-      
-      // Resetta il colore del bordo dopo 1 secondo
-      setTimeout(() => {
-        pinInput.style.borderColor = "#1a73e8";
-      }, 1000);
+      setTimeout(() => { pinInput.style.borderColor = "#1a73e8"; }, 1000);
     }
   } else {
     pinError.style.display = "none";
@@ -401,40 +426,21 @@ function unisciEOrdinaDate(date1ora, date3ore) {
     const day = parseInt(parts[1]);
     const month = months[parts[2]];
     const [hours, minutes] = parts[3].split(":").map(Number);
-    
     const now = new Date();
     let year = now.getFullYear();
-    
-    // Se il mese è prima del mese corrente, significa anno prossimo
-    if (month < now.getMonth() || (month === now.getMonth() && day < now.getDate())) {
-      year++;
-    }
-    
+    if (month < now.getMonth() || (month === now.getMonth() && day < now.getDate())) year++;
     return new Date(year, month, day, hours, minutes);
   }
   
   const allDatesWithText = [];
-  
   date1ora.forEach(d => {
     const dateObj = parseDateString(d);
-    if (dateObj) {
-      allDatesWithText.push({
-        date: dateObj,
-        text: "1 ORA fermo auto: " + d
-      });
-    }
+    if (dateObj) allDatesWithText.push({ date: dateObj, text: "1 ORA fermo auto: " + d });
   });
-  
   date3ore.forEach(d => {
     const dateObj = parseDateString(d);
-    if (dateObj) {
-      allDatesWithText.push({
-        date: dateObj,
-        text: "3 ORE fermo auto: " + d
-      });
-    }
+    if (dateObj) allDatesWithText.push({ date: dateObj, text: "3 ORE fermo auto: " + d });
   });
-  
   allDatesWithText.sort((a, b) => a.date - b.date);
   return allDatesWithText.map(item => item.text);
 }
@@ -442,7 +448,6 @@ function unisciEOrdinaDate(date1ora, date3ore) {
 function popolaDateDropdown() {
   const select = document.getElementById("dataAppuntamento");
   select.innerHTML = '<option value="">Seleziona...</option>';
-  
   dateDisponibili.forEach(d => {
     const option = document.createElement("option");
     option.value = d;
@@ -503,6 +508,11 @@ function aggiornaRiconsegna() {
 
 function chiudiAvvisoData() { document.getElementById("dateUnavailableOverlay").style.display = "none"; }
 
+function mostraErroreGas(msg) {
+  if (msg) document.getElementById("gasErrorMsg").innerHTML = msg;
+  document.getElementById("gasErrorOverlay").style.display = "flex";
+}
+
 async function invia(){
   const btn = document.getElementById("prenota");
   btn.disabled = true;
@@ -531,6 +541,7 @@ async function invia(){
       dateDisponibili = unisciEOrdinaDate(date1ora, date3ore);
       popolaDateDropdown();
       document.getElementById("dataAppuntamento").value = "";
+      document.getElementById("infoRiconsegna").style.display = "none";
       aggiornaStatoPrenota();
       btn.disabled = false;
       return;
@@ -563,17 +574,13 @@ async function invia(){
       overlay.style.display = "block";
       overlay.scrollIntoView({behavior:"smooth", block:"center"});
     } else {
-      document.getElementById("formWrapper").style.display = "none";
-      const errorOverlay = document.getElementById("errorOverlay");
-      errorOverlay.style.display = "block";
-      errorOverlay.scrollIntoView({behavior:"smooth", block:"center"});
+      btn.disabled = false;
+      mostraErroreGas("Il server ha risposto con un errore:<br><br><em>" + (result.error || "Errore sconosciuto") + "</em><br><br>I tuoi dati sono ancora qui, riprova.");
     }
   } catch(error) {
     document.getElementById("sendingOverlay").style.display = "none";
-    document.getElementById("formWrapper").style.display = "none";
-    const errorOverlay = document.getElementById("errorOverlay");
-    errorOverlay.style.display = "block";
-    errorOverlay.scrollIntoView({behavior:"smooth", block:"center"});
+    btn.disabled = false;
+    mostraErroreGas("Errore di connessione col server.<br><br>Controlla la tua rete e riprova. I tuoi dati sono ancora qui.");
   }
 }
 </script>
